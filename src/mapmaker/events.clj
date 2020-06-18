@@ -1,11 +1,13 @@
 (ns mapmaker.events)
 
-(defn deref-co-effect [*state]
+(defn deref-co-effect
   "Derefs the provided state atom for further event processing."
+  [*state]
   (deref *state))
 
-(defn reset-effect! [*state event-result _]
+(defn reset-effect!
   "Resets the provided state atom with the value returned from running the event."
+  [*state event-result _]
   (reset! *state event-result))
 
 (defn co-effects [*state]
