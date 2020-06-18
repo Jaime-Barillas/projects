@@ -1,4 +1,6 @@
 (ns mapmaker.views
+  (:require
+    [mapmaker.events :as events])
   (:import
     (javafx.stage Screen)))
 
@@ -46,5 +48,20 @@
              :root {:fx/type :border-pane
                     :top {:fx/type :menu-bar
                           :menus menus}
+                    :right {:fx/type :v-box
+                            :children [{:fx/type :button
+                                        :text "Select Tileset"
+                                        :on-action {:event/type ::events/open-file
+                                                    :file/kind :tileset}}
+                                       {:fx/type :scroll-pane
+                                        :min-viewport-width 32
+                                        :pref-viewport-width 64
+                                        :vbar-policy :always
+                                        :v-box/vgrow :always
+                                        :content (if (:tileset state)
+                                                   {:fx/type :image-view
+                                                    :image (str "file:" (.getAbsolutePath (get-in state [:tileset :file])))}
+                                                   {:fx/type :label
+                                                    :text "Select a\ntileset"})}]}
                     :bottom {:fx/type status-bar
                              :map-name (:map-name state)}}}}))
