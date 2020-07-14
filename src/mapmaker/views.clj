@@ -42,8 +42,8 @@
               :url "images/icon.png"}]
      :x x
      :y y
-     :min-width 480
-     :min-height 360
+     :min-width 800
+     :min-height 600
      :scene {:fx/type :scene
              :root {:fx/type :border-pane
                     :top {:fx/type :menu-bar
