@@ -48,10 +48,12 @@
              :root {:fx/type :border-pane
                     :top {:fx/type :menu-bar
                           :menus menus}
+                    :left {:fx/type :tool-bar
+                           :items []}
                     :right {:fx/type :v-box
                             :children [{:fx/type :button
                                         :text "Select Tileset"
-                                        :on-action {:event/type ::events/open-file
+                                        :on-action {::events/type ::events/open-file
                                                     :file/kind :tileset}}
                                        {:fx/type :scroll-pane
                                         :min-viewport-width 32
@@ -62,6 +64,6 @@
                                                    {:fx/type :image-view
                                                     :image (str "file:" (.getAbsolutePath (get-in state [:tileset :file])))}
                                                    {:fx/type :label
-                                                    :text "Select a\ntileset"})}]}
+                                                    :text "Select a\nTileset"})}]}
                     :bottom {:fx/type status-bar
                              :map-name (:map-name state)}}}}))

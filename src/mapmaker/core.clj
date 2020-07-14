@@ -7,7 +7,9 @@
     (javafx.application Platform))
   (:gen-class))
 
-(defonce *state (atom {:title "mapmaker"}))
+(defonce *state (atom {:title "MapMaker"
+                       :tilemap {}
+                       :tileset {}}))
 
 (def renderer
   (fx/create-renderer
