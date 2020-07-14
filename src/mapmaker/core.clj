@@ -29,4 +29,6 @@
 
   (fx/unmount-renderer *state renderer)
 
+  (renderer)
+
 )
