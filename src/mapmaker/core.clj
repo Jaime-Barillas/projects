@@ -10,7 +10,9 @@
 (defonce *state (atom {:title "MapMaker"
                        :tilemap {}
                        :tileset {}
-                       :show-tileset-dialog false}))
+                       :show-tileset-dialog false
+                       :hovered-tile nil
+                       :selected-tile nil}))
 
 (def renderer
   (fx/create-renderer

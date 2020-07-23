@@ -87,21 +87,37 @@
           :on-action {::events/type ::events/open-file
                       :file/kind :tileset}}})
 
-(defn tile-list [{:keys [tileset]}]
+(defn tile-list [{:keys [tileset hovered-tile selected-tile]}]
   {:fx/type :tile-pane
    :hgap 2
    :vgap 2
    :pref-columns 3;(:width tileset)
    :children (for [y (range (:height tileset))
-                   x (range (:width tileset))]
-               {:fx/type :image-view
-                :image (:image tileset)
-                :viewport {:min-x (* x (:tile-width tileset))
-                           :min-y (* y (:tile-height tileset))
-                           :width (:tile-width tileset)
-                           :height (:tile-height tileset)}})})
+                   x (range (:width tileset))
+                   :let [i (+ x (* y (:width tileset)))]]
+               (merge (when (or (= i selected-tile) (= i hovered-tile))
+                        {:effect {:fx/type :blend
+                                  :mode :multiply
+                                  :opacity 0.5
+                                  :bottom-input {:fx/type :color-adjust
+                                                 :saturation -1}
+                                  :top-input {:fx/type :color-input
+                                              :x 0
+                                              :y 0
+                                              :width (:tile-width tileset)
+                                              :height (:tile-height tileset)
+                                              :paint (if (= i selected-tile) :red :blue)}}})
+                      {:fx/type :image-view
+                       :image (:image tileset)
+                       :on-mouse-entered {::events/type ::events/set-hovered-tile}
+                       :on-mouse-exited {::events/type ::events/reset-hovered-tile}
+                       :on-mouse-clicked {::events/type ::events/set-selected-tile}
+                       :viewport {:min-x (* x (:tile-width tileset))
+                                  :min-y (* y (:tile-height tileset))
+                                  :width (:tile-width tileset)
+                                  :height (:tile-height tileset)}}))})
 
-(defn tileset-pane [{:keys [tileset show-dialog]}]
+(defn tileset-pane [{:keys [tileset show-dialog hovered-tile selected-tile]}]
   {:fx/type :v-box
    :children [{:fx/type select-tileset-control
                :show-dialog show-dialog}
@@ -112,7 +128,9 @@
                :v-box/vgrow :always
                :content (if (contains? tileset :width)
                           {:fx/type tile-list
-                           :tileset tileset}
+                           :tileset tileset
+                           :hovered-tile hovered-tile
+                           :selected-tile selected-tile}
                           {:fx/type :label
                            :text "Select a\nTileset"})}]})
 
@@ -137,6 +155,8 @@
                            :items []}
                     :right {:fx/type tileset-pane
                             :tileset (:tileset state)
-                            :show-dialog (:show-tileset-dialog state)}
+                            :show-dialog (:show-tileset-dialog state)
+                            :hovered-tile (:hovered-tile state)
+                            :selected-tile (:selected-tile state)}
                     :bottom {:fx/type status-bar
                              :map-name (:map-name state)}}}}))

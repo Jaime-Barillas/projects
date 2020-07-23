@@ -65,4 +65,21 @@
               (assoc-in [:tileset :width] (nth tileset-attributes 0))
               (assoc-in [:tileset :height] (nth tileset-attributes 1))
               (assoc-in [:tileset :tile-width] (nth tileset-attributes 2))
-              (assoc-in [:tileset :tile-height] (nth tileset-attributes 3)))})
+              (assoc-in [:tileset :tile-height] (nth tileset-attributes 3)))
+   :dispatch {::type ::reset-selected-tile}})
+
+(defmethod handle-event ::set-hovered-tile [{:keys [state fx/event]}]
+  (let [tile (.getTarget event)
+        tiles (.. tile (getParent) (getChildren))]
+    {:state (assoc state :hovered-tile (.indexOf tiles tile))}))
+
+(defmethod handle-event ::reset-hovered-tile [{:keys [state]}]
+  {:state (assoc state :hovered-tile nil)})
+
+(defmethod handle-event ::set-selected-tile [{:keys [state fx/event]}]
+  (let [tile (.getTarget event)
+        tiles (.. tile (getParent) (getChildren))]
+    {:state (assoc state :selected-tile (.indexOf tiles tile))}))
+
+(defmethod handle-event ::reset-selected-tile [{:keys [state]}]
+  {:state (assoc state :selected-tile nil)})
