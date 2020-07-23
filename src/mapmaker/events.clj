@@ -45,15 +45,24 @@
     (.addAll ext-filter (->ExtensionFilters {"Image Files" ["*.png" "*.jpg" "*.gif"]
                                              "All Files" ["*.*"]}))
     (when-let [file (.showOpenDialog chooser window)]
-      {:state (assoc state :tileset {:image (Image. (str "file:" (.getAbsolutePath file)))
-                                     :width 16
-                                     :height 12
-                                     :tile-width 32
-                                     :tile-height 32})})))
+      {:state (assoc state
+                     :tileset {:image (->> file
+                                           (.getAbsolutePath)
+                                           (str "file:")
+                                           (Image.))}
+                     :show-tileset-dialog true)})))
 
-(defmethod handle-event ::gen-tileset [{:keys [state file]}]
-  {:state (assoc state :tileset {:image (Image. (str "file:" (.getAbsolutePath file)))
-                                 :width 3
-                                 :height 3
-                                 :tile-width 16
-                                 :tile-height 16})})
+(defmethod handle-event ::on-tileset-dialog-hidden [{:keys [state fx/event]}]
+  (let [content (.. event (getTarget) (getDialogPane) (getContent) (getChildren))
+        text-fields (map #(.getValue (.getTextFormatter %))
+                         (take-nth 2 (drop 1 content)))]
+    {:state (assoc state :show-tileset-dialog false)
+     :dispatch {::type ::gen-tileset
+                :tileset-attributes text-fields}}))
+
+(defmethod handle-event ::gen-tileset [{:keys [state tileset-attributes]}]
+  {:state (-> state
+              (assoc-in [:tileset :width] (nth tileset-attributes 0))
+              (assoc-in [:tileset :height] (nth tileset-attributes 1))
+              (assoc-in [:tileset :tile-width] (nth tileset-attributes 2))
+              (assoc-in [:tileset :tile-height] (nth tileset-attributes 3)))})
