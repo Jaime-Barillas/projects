@@ -6,7 +6,7 @@
   (:gen-class))
 
 (defonce *state
-  (atom {}))
+  (atom {:tasks []}))
 
 ;; Views
 
@@ -17,14 +17,16 @@
               {:fx/type :button
                :text "Add Task"}]})
 
-(defn task-item [{:keys [task-text]}]
+(defn task-item [{:keys [task-id task-text]}]
   {:fx/type :h-box
    :children [{:fx/type :label
                :text task-text}
               {:fx/type :button
-               :text "Delete"}]})
+               :text "Delete"
+               :on-action {:event/type ::delete-task
+                           ::task-id task-id}}]})
 
-(defn root [state]
+(defn root [{:keys [tasks]}]
   {:fx/type :stage
    :showing :true
    :title "Todo App - Clojure(cljfx)"
@@ -33,13 +35,29 @@
    :scene {:fx/type :scene
            :root {:fx/type :v-box
                   :children (into [{:fx/type task-input}]
-                              (for [i (range 4)]
+                              (for [task tasks]
                                {:fx/type task-item
-                                :task-text (str "Task #" i)}))}}})
+                                :task-id (:id task)
+                                :task-text (:text task)}))}}})
+
+;; Events
+
+(defmulti handle-event :event/type)
+
+(defmethod handle-event ::delete-task
+  [{:keys [state todo.core/task-id]}]
+  {:state (update state :tasks (partial remove #(= task-id (:id %))))})
+
+(def handler (-> handle-event
+               (fx/wrap-co-effects {:state (fx/make-deref-co-effect *state)})
+               (fx/wrap-effects {:state (fx/make-reset-effect *state)})))
+
+;; Main
 
 (def renderer
   (fx/create-renderer
-    :middleware (fx/wrap-map-desc assoc :fx/type root)))
+    :middleware (fx/wrap-map-desc assoc :fx/type root)
+    :opts {:fx.opt/map-event-handler handler}))
 
 (defn -main
   "I don't do a whole lot ... yet."
@@ -54,5 +72,14 @@
   (fx/unmount-renderer *state renderer)
 
   (renderer)
+
+  (do
+    (reset! *state
+      {
+       :tasks (for [i (range 4)]
+                {:id i
+                 :text (str "Task #" i)})
+      })
+    @*state)
 
 )
