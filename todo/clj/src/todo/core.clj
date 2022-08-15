@@ -8,6 +8,15 @@
 (defonce *state
   (atom {}))
 
+;; Views
+
+(defn task-input [params]
+  {:fx/type :h-box
+   :children [{:fx/type :text-field
+               :prompt-text "Enter a task"}
+              {:fx/type :button
+               :text "Add Task"}]})
+
 (defn root [state]
   {:fx/type :stage
    :showing :true
@@ -15,8 +24,7 @@
    :min-width 480
    :min-height 854
    :scene {:fx/type :scene
-           :root {:fx/type :label
-                  :text "A Window!"}}})
+           :root {:fx/type task-input}}})
 
 (def renderer
   (fx/create-renderer
