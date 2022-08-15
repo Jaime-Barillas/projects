@@ -44,6 +44,11 @@
 
 (defmulti handle-event :event/type)
 
+(defmethod handle-event :default
+  [event-map]
+  (throw (ex-info (str "No event handler for event: " (:event/type event-map))
+           {:event event-map})))
+
 (defmethod handle-event ::delete-task
   [{:keys [state todo.core/task-id]}]
   {:state (update state :tasks (partial remove #(= task-id (:id %))))})
