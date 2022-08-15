@@ -17,6 +17,13 @@
               {:fx/type :button
                :text "Add Task"}]})
 
+(defn task-item [{:keys [task-text]}]
+  {:fx/type :h-box
+   :children [{:fx/type :label
+               :text task-text}
+              {:fx/type :button
+               :text "Delete"}]})
+
 (defn root [state]
   {:fx/type :stage
    :showing :true
@@ -24,7 +31,11 @@
    :min-width 480
    :min-height 854
    :scene {:fx/type :scene
-           :root {:fx/type task-input}}})
+           :root {:fx/type :v-box
+                  :children (into [{:fx/type task-input}]
+                              (for [i (range 4)]
+                               {:fx/type task-item
+                                :task-text (str "Task #" i)}))}}})
 
 (def renderer
   (fx/create-renderer
