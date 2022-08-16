@@ -21,29 +21,45 @@
                :text "Add Task"
                :on-action {:event/type ::add-task}}]})
 
-(defn task-item [{:keys [task-id task-text]}]
-  {:fx/type :h-box
-   :children [{:fx/type :label
-               :text task-text}
-              {:fx/type :button
-               :text "Delete"
-               :on-action {:event/type ::delete-task
-                           ::task-id task-id}}]})
+(defn gen-task-item [row task-id task-text]
+  [{:fx/type :label
+    :grid-pane/column 0
+    :grid-pane/row row
+    :text task-text}
+   {:fx/type :button
+    :grid-pane/column 1
+    :grid-pane/row row
+    :text "Delete"
+    :on-action {:event/type ::delete-task
+                ::task-id task-id}}])
 
-(defn root [{:keys [typed-text tasks]}]
+(defn app [{:keys [typed-text tasks]}]
+  {:fx/type :v-box
+   :children [{:fx/type :h-box
+               :alignment :center
+               :children [{:fx/type task-input
+                           :text typed-text}]}
+              {:fx/type :h-box
+               :alignment :center
+               :children [{:fx/type :grid-pane
+                           :column-constraints [{:fx/type :column-constraints
+                                                 :percent-width 70}
+                                                {:fx/type :column-constraints
+                                                 :percent-width 30}]
+                           :children (apply concat
+                                       (map-indexed
+                                         (fn [i task]
+                                           (gen-task-item i (:id task) (:text task)))
+                                         tasks))}]}]})
+
+(defn root [state]
   {:fx/type :stage
    :showing :true
    :title "Todo App - Clojure(cljfx)"
    :min-width 480
    :min-height 480
    :scene {:fx/type :scene
-           :root {:fx/type :v-box
-                  :children (into [{:fx/type task-input
-                                    :text typed-text}]
-                              (for [task tasks]
-                               {:fx/type task-item
-                                :task-id (:id task)
-                                :task-text (:text task)}))}}})
+           :root (merge state {:fx/type app})}})
 
 ;; Events
 
