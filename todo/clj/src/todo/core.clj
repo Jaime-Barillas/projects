@@ -11,10 +11,11 @@
 
 ;; Views
 
-(defn task-input [params]
+(defn task-input [{:keys [text]}]
   {:fx/type :h-box
    :children [{:fx/type :text-field
                :prompt-text "Enter a task"
+               :text text
                :on-text-changed {:event/type ::text-changed}}
               {:fx/type :button
                :text "Add Task"
@@ -29,7 +30,7 @@
                :on-action {:event/type ::delete-task
                            ::task-id task-id}}]})
 
-(defn root [{:keys [tasks]}]
+(defn root [{:keys [typed-text tasks]}]
   {:fx/type :stage
    :showing :true
    :title "Todo App - Clojure(cljfx)"
@@ -37,7 +38,8 @@
    :min-height 480
    :scene {:fx/type :scene
            :root {:fx/type :v-box
-                  :children (into [{:fx/type task-input}]
+                  :children (into [{:fx/type task-input
+                                    :text typed-text}]
                               (for [task tasks]
                                {:fx/type task-item
                                 :task-id (:id task)
