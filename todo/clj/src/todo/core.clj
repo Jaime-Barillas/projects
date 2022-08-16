@@ -6,14 +6,16 @@
   (:gen-class))
 
 (defonce *state
-  (atom {:tasks []}))
+  (atom {:typed-text ""
+         :tasks []}))
 
 ;; Views
 
 (defn task-input [params]
   {:fx/type :h-box
    :children [{:fx/type :text-field
-               :prompt-text "Enter a task"}
+               :prompt-text "Enter a task"
+               :on-text-changed {:event/type ::text-changed}}
               {:fx/type :button
                :text "Add Task"}]})
 
@@ -48,6 +50,10 @@
   [event-map]
   (throw (ex-info (str "No event handler for event: " (:event/type event-map))
            {:event event-map})))
+
+(defmethod handle-event ::text-changed
+  [{:keys [state fx/event]}]
+  {:state (assoc state :typed-text event)})
 
 (defmethod handle-event ::delete-task
   [{:keys [state todo.core/task-id]}]

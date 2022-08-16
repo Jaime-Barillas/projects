@@ -2,6 +2,13 @@
   (:require [clojure.test :refer :all]
             [todo.core :as todo :refer [handle-event]]))
 
+(deftest text-changed
+  (let [before {:state {:typed-text ""}}
+        after {:state {:typed-text "Some Text"}}]
+    (is (= after
+          (handle-event (merge before {:event/type ::todo/text-changed
+                                       :fx/event "Some Text"}))))))
+
 (deftest add-task
   (testing "A new task"
     (let [before {:state {:typed-text "A new task"
