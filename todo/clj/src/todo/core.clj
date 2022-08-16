@@ -57,7 +57,9 @@
 
 (defmethod handle-event ::delete-task
   [{:keys [state todo.core/task-id]}]
-  {:state (update state :tasks (partial remove #(= task-id (:id %))))})
+  {:state (update state :tasks
+            (fn [tasks]
+              (vec (remove #(= task-id (:id %)) tasks))))})
 
 (def handler (-> handle-event
                (fx/wrap-co-effects {:state (fx/make-deref-co-effect *state)})
