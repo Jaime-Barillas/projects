@@ -17,7 +17,8 @@
                :prompt-text "Enter a task"
                :on-text-changed {:event/type ::text-changed}}
               {:fx/type :button
-               :text "Add Task"}]})
+               :text "Add Task"
+               :on-action {:event/type ::add-task}}]})
 
 (defn task-item [{:keys [task-id task-text]}]
   {:fx/type :h-box
@@ -54,6 +55,19 @@
 (defmethod handle-event ::text-changed
   [{:keys [state fx/event]}]
   {:state (assoc state :typed-text event)})
+
+(defmethod handle-event ::add-task
+  [{:keys [state]}]
+  (let [last-task (-> state :tasks peek)
+        next-id (if last-task
+                  (inc (:id last-task))
+                  0)
+        task-text (:typed-text state)]
+    (if-not (empty? task-text)
+      {:state (-> state
+                (update :tasks conj {:id next-id :text task-text})
+                (assoc :typed-text ""))}
+      {:state state})))
 
 (defmethod handle-event ::delete-task
   [{:keys [state todo.core/task-id]}]
