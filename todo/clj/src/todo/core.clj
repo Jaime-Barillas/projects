@@ -33,7 +33,7 @@
    :showing :true
    :title "Todo App - Clojure(cljfx)"
    :min-width 480
-   :min-height 854
+   :min-height 480
    :scene {:fx/type :scene
            :root {:fx/type :v-box
                   :children (into [{:fx/type task-input}]
