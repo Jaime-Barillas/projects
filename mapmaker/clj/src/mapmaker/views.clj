@@ -1,9 +1,7 @@
 (ns mapmaker.views
   (:require
     [cljfx.api :as fx]
-    [mapmaker.events :as events])
-  (:import
-    (javafx.stage Screen)))
+    [mapmaker.events :as-alias events]))
 
 (def menus
   [{:fx/type :menu
@@ -135,28 +133,23 @@
                            :text "Select a\nTileset"})}]})
 
 (defn root-view [{:keys [state]}]
-  (let [bounds (.getVisualBounds (Screen/getPrimary))
-        x (.getMinX bounds)
-        y (.getMinY bounds)]
-    {:fx/type :stage
-     :showing true
-     :title (:title state)
-     :icons [{:fx/type :image
-              :url "images/icon.png"}]
-     :x x
-     :y y
-     :min-width 800
-     :min-height 600
-     :scene {:fx/type :scene
-             :root {:fx/type :border-pane
-                    :top {:fx/type :menu-bar
-                          :menus menus}
-                    :left {:fx/type :tool-bar
-                           :items []}
-                    :right {:fx/type tileset-pane
-                            :tileset (:tileset state)
-                            :show-dialog (:show-tileset-dialog state)
-                            :hovered-tile (:hovered-tile state)
-                            :selected-tile (:selected-tile state)}
-                    :bottom {:fx/type status-bar
-                             :map-name (:map-name state)}}}}))
+  {:fx/type :stage
+   :showing true
+   :title (:title state)
+   :icons [{:fx/type :image
+            :url "images/icon.png"}]
+   :min-width 800
+   :min-height 600
+   :scene {:fx/type :scene
+           :root {:fx/type :border-pane
+                  :top {:fx/type :menu-bar
+                        :menus menus}
+                  :left {:fx/type :tool-bar
+                         :items []}
+                  :right {:fx/type tileset-pane
+                          :tileset (:tileset state)
+                          :show-dialog (:show-tileset-dialog state)
+                          :hovered-tile (:hovered-tile state)
+                          :selected-tile (:selected-tile state)}
+                  :bottom {:fx/type status-bar
+                           :map-name (:map-name state)}}}})
