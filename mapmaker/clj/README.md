@@ -1,6 +1,6 @@
 # Mapmaker
 
-A program to help you make tiled maps.
+A program to help you make tile based 2D maps.
 
 NOTE: If you want a JavaFX control to grow to fill it's VBox then it is
 best to set VGrow to ALWAYS and prefHeight to 0.

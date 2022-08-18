@@ -1,5 +1,5 @@
 (defproject mapmaker "0.1.0-SNAPSHOT"
-  :description "A program to help you create tiled maps."
+  :description "A program to help you make tile based 2D maps."
   :url "http://example.com/FIXME"
   :license {:name "ISC"
             :url "https://opensource.org/licenses/ISC"}
