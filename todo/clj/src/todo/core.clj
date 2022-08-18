@@ -15,6 +15,7 @@
   {:fx/type :h-box
    :style {:-fx-padding [10 0]
            :-fx-spacing 5}
+   :alignment :center
    :children [{:fx/type :text-field
                :prompt-text "Enter a task"
                :text text
@@ -52,18 +53,13 @@
 
 (defn app [{:keys [typed-text tasks]}]
   {:fx/type :v-box
-   :children [{:fx/type :h-box
-               :alignment :center
-               :children [{:fx/type task-input
-                           :text typed-text}]}
+   :children [
+              {:fx/type task-input
+               :text typed-text}
               {:fx/type :h-box
                :alignment :center
                :children [{:fx/type :grid-pane
                            :style {:-fx-vgap 5}
-                           :column-constraints [{:fx/type :column-constraints
-                                                 :percent-width 70}
-                                                {:fx/type :column-constraints
-                                                 :percent-width 30}]
                            :children (apply concat
                                        (map-indexed
                                          (fn [i task]
