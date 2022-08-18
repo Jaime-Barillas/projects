@@ -91,7 +91,8 @@
 
 (defmethod handle-event ::add-task
   [{:keys [state fx/event]}]
-  (-> event
+  (some-> event
+    .getTarget
     .getScene
     (.lookup "#task-input")
     .requestFocus)
