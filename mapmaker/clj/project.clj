@@ -3,8 +3,8 @@
   :url "http://example.com/FIXME"
   :license {:name "ISC"
             :url "https://opensource.org/licenses/ISC"}
-  :dependencies [[org.clojure/clojure "1.10.1"]
-                 [cljfx "1.7.2"]]
+  :dependencies [[org.clojure/clojure "1.11.1"]
+                 [cljfx "1.7.21"]]
   :main ^:skip-aot mapmaker.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all
