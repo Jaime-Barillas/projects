@@ -17,6 +17,7 @@
            :-fx-spacing 5}
    :alignment :center
    :children [{:fx/type :text-field
+               :id "task-input"
                :prompt-text "Enter a task"
                :text text
                :on-text-changed {:event/type ::text-changed}}
@@ -89,7 +90,11 @@
   {:state (assoc state :typed-text event)})
 
 (defmethod handle-event ::add-task
-  [{:keys [state]}]
+  [{:keys [state fx/event]}]
+  (-> event
+    .getScene
+    (.lookup "#task-input")
+    .requestFocus)
   (let [last-task (-> state :tasks peek)
         next-id (if last-task
                   (inc (:id last-task))
