@@ -1,6 +1,13 @@
-This repo contains various projects in various programming languages.
+# Mapmaker
 
-All code in this repo is [ISC licensed](https://opensource.org/licenses/ISC).
+A program to help you make tiled maps.
+
+NOTE: If you want a JavaFX control to grow to fill it's VBox then it is
+best to set VGrow to ALWAYS and prefHeight to 0.
+This link demonstrates the problem somewhat:
+https://news.kynosarges.org/2013/11/20/javafx-listview-sizing/
+
+This project is [ISC licensed](https://opensource.org/licenses/ISC).
 
 # License
 
