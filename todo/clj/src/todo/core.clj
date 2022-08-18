@@ -13,22 +13,39 @@
 
 (defn task-input [{:keys [text]}]
   {:fx/type :h-box
+   :style {:-fx-padding [10 0]
+           :-fx-spacing 5}
    :children [{:fx/type :text-field
                :prompt-text "Enter a task"
                :text text
                :on-text-changed {:event/type ::text-changed}}
               {:fx/type :button
+               :style {:-fx-background-color :#247db8
+                       :-fx-text-fill :white
+                       :-fx-font-weight :bold}
+               :default-button true
                :text "Add Task"
                :on-action {:event/type ::add-task}}]})
 
 (defn gen-task-item [row task-id task-text]
-  [{:fx/type :label
+  [{:fx/type :pane
     :grid-pane/column 0
     :grid-pane/row row
-    :text task-text}
+    ;; :grid-pane/margin is used to space the label and button because the
+    ;; hgap setting in style causes the last part of the longest label to be
+    ;; trimmed and ellipsized.
+    :grid-pane/margin {:right 5}
+    :style {:-fx-border-color :gray
+            :-fx-border-style :solid
+            :-fx-border-width [0 0 2 0]}
+    :children [{:fx/type :label
+                :text task-text}]}
    {:fx/type :button
     :grid-pane/column 1
     :grid-pane/row row
+    :style {:-fx-background-color :#d82424
+            :-fx-text-fill :white
+            :-fx-font-weight :bold}
     :text "Delete"
     :on-action {:event/type ::delete-task
                 ::task-id task-id}}])
@@ -42,6 +59,7 @@
               {:fx/type :h-box
                :alignment :center
                :children [{:fx/type :grid-pane
+                           :style {:-fx-vgap 5}
                            :column-constraints [{:fx/type :column-constraints
                                                  :percent-width 70}
                                                 {:fx/type :column-constraints
