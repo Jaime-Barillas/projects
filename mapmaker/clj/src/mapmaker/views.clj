@@ -45,8 +45,9 @@
                                      child)))
                           children)})
 
-(defn number-filter [change]
-  (when (re-matches #"\d*" (.getControlNewText change)) change))
+(defonce number-filter
+  (fn number-filter [change]
+    (when (re-matches #"\d*" (.getControlNewText change)) change)))
 
 (defn number-text-field [{:keys [value]}]
   {:fx/type :text-field
