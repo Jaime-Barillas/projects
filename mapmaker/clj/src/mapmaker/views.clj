@@ -1,7 +1,8 @@
 (ns mapmaker.views
   (:require
     [cljfx.api :as fx]
-    [mapmaker.events :as-alias events]))
+    [mapmaker.events :as-alias events]
+    [mapmaker.tilemap :as tilemap]))
 
 (def menus
   [{:fx/type :menu
@@ -108,6 +109,9 @@
                                               :paint (if (= i selected-tile) :red :blue)}}})
                       {:fx/type :image-view
                        :image (:image tileset)
+                       ;; FIXME: Below events are only triggered on _non-transparent_
+                       ;; portions of the image. They are **NOT** fired upon mousing
+                       ;; over transparent parts of the image.
                        :on-mouse-entered {::events/type ::events/set-hovered-tile}
                        :on-mouse-exited {::events/type ::events/reset-hovered-tile}
                        :on-mouse-clicked {::events/type ::events/set-selected-tile}
@@ -142,15 +146,31 @@
    :min-width 800
    :min-height 600
    :scene {:fx/type :scene
-           :root {:fx/type :border-pane
-                  :top {:fx/type :menu-bar
-                        :menus menus}
-                  :left {:fx/type :tool-bar
-                         :items []}
-                  :right {:fx/type tileset-pane
-                          :tileset (:tileset state)
-                          :show-dialog (:show-tileset-dialog state)
-                          :hovered-tile (:hovered-tile state)
-                          :selected-tile (:selected-tile state)}
-                  :bottom {:fx/type status-bar
-                           :map-name (:map-name state)}}}})
+           :root {:fx/type fx/ext-on-instance-lifecycle
+                  ;; TODO: This will resize the canvas, but it does not cause the app
+                  ;; state to update and thus not cause the canvas to repaint.
+                  ;; This means the user has to perform some action that updates the app
+                  ;; state to see the tilemap repainted at the new size. Consider using
+                  ;; addListener on the canvas' width and height properties to issue a
+                  ;; redraw (via event or the fn in the tilemap ns?)
+                  :on-created #(let [canvas (.lookup % "#canvas")
+                                     pane (.getParent canvas)]
+                                 (.bind (.widthProperty canvas) (.widthProperty pane))
+                                 (.bind (.heightProperty canvas) (.heightProperty pane)))
+                  :desc {:fx/type :border-pane
+                         :top {:fx/type :menu-bar
+                               :menus menus}
+                         :left {:fx/type :tool-bar
+                                :items []}
+                         :right {:fx/type tileset-pane
+                                 :tileset (:tileset state)
+                                 :show-dialog (:show-tileset-dialog state)
+                                 :hovered-tile (:hovered-tile state)
+                                 :selected-tile (:selected-tile state)}
+                         :bottom {:fx/type status-bar
+                                  :map-name (:map-name state)}
+                         :center {:fx/type :pane
+                                  :children [{:fx/type :canvas
+                                              :id "canvas"
+                                              :on-mouse-moved {::events/type ::events/mouse-moved}
+                                              :draw #(tilemap/draw % state)}]}}}}})

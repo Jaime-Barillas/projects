@@ -83,3 +83,16 @@
 
 (defmethod handle-event ::reset-selected-tile [{:keys [state]}]
   {:state (assoc state :selected-tile nil)})
+
+(defmethod handle-event ::mouse-moved [{:keys [state fx/event]}]
+  ;; TODO: Better handle uninitialized portions of app state.
+  (let [mouse-x (.getX event)
+        mouse-y (.getY event)
+        tile-width (or (get-in state [:tileset :tile-width]) 1)
+        tile-height (or (get-in state [:tileset :tile-height]) 1)
+        [prev-x prev-y] (get-in state [:tilemap :hovered-tile])
+        new-x (quot mouse-x tile-width)
+        new-y (quot mouse-y tile-height)]
+    (if (or (not= prev-x new-x) (not= prev-y new-y))
+      {:state (assoc-in state [:tilemap :hovered-tile] [new-x new-y])}
+      {:state state})))
