@@ -173,4 +173,5 @@
                                   :children [{:fx/type :canvas
                                               :id "canvas"
                                               :on-mouse-moved {::events/type ::events/mouse-moved}
+                                              :on-mouse-clicked {::events/type ::events/set-canvas-tile}
                                               :draw #(tilemap/draw % state)}]}}}}})

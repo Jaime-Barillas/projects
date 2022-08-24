@@ -96,3 +96,13 @@
     (if (or (not= prev-x new-x) (not= prev-y new-y))
       {:state (assoc-in state [:tilemap :hovered-tile] [new-x new-y])}
       {:state state})))
+
+(defmethod handle-event ::set-canvas-tile [{:keys [state fx/event]}]
+  (let [mouse-x (.getX event)
+        mouse-y (.getY event)
+        tile-width (or (get-in state [:tileset :tile-width]) 1)
+        tile-height (or (get-in state [:tileset :tile-height]) 1)
+        new-x (quot mouse-x tile-width)
+        new-y (quot mouse-y tile-height)
+        selected-tile (:selected-tile state)]
+    {:state (assoc-in state [:tilemap [new-x new-y]] selected-tile)}))
