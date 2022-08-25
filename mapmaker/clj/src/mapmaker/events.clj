@@ -1,7 +1,13 @@
 (ns mapmaker.events
-  (:require [cljfx.api :as fx])
+  (:require
+    [cljfx.api :as fx]
+    [clojure.java.io :as io])
   (:import
+    (javafx.embed.swing SwingFXUtils)
+    (javax.imageio ImageIO)
     (javafx.scene.image Image)
+    (javafx.scene.paint Paint)
+    (javafx.scene SnapshotParameters)
     (javafx.stage FileChooser FileChooser$ExtensionFilter)))
 
 (defn co-effects [*state]
@@ -106,3 +112,18 @@
         new-y (quot mouse-y tile-height)
         selected-tile (:selected-tile state)]
     {:state (assoc-in state [:tilemap [new-x new-y]] selected-tile)}))
+
+(defmethod handle-event ::save-tilemap [{:keys [state filetype fx/event]}]
+  (let [scene (-> event .getTarget .getUserData .getScene)
+        canvas (.lookup scene "#canvas")
+        sn (SnapshotParameters.)]
+    (.setFill sn (Paint/valueOf "#00000000"))
+    ;; This is more involved than expected...
+    ;; call (.snapshot canvas sn nil) on the canvas
+    ;; then from javafx.embed.swing.SwingFXUtils call .fromFXImage
+    ;; then javax.imageio.ImageIO .write
+    (let [i (.snapshot canvas sn nil)
+          bi (SwingFXUtils/fromFXImage i nil)
+          file (io/file (str "map." filetype))]
+      (ImageIO/write bi filetype file))
+    {:state state}))

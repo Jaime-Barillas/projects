@@ -4,25 +4,34 @@
     [mapmaker.events :as-alias events]
     [mapmaker.tilemap :as tilemap]))
 
-(def menus
-  [{:fx/type :menu
-    :text "File"
-    :items [{:fx/type :menu-item
-             :text "New"}
-            {:fx/type :menu-item
-             :text "Open..."}
-            {:fx/type :menu-item
-             :text "Save"}
-            {:fx/type :menu
-             :text "Export As"
-             :items [{:fx/type :menu-item
-                      :text "PNG"}
-                     {:fx/type :menu-item
-                      :text "JPG"}]}]}
-   {:fx/type :menu
-    :text "Help"
-    :items [{:fx/type :menu-item
-             :text "About"}]}])
+(defn menu-bar [params]
+  ;; TODO: See if there is a better way of reaching the parent Scene from a
+  ;; menu/menu-item. Neither menu or menu-item classes have a property or
+  ;; method to usable to reach the parent Scene.
+  {:fx/type fx/ext-on-instance-lifecycle
+   :on-created #(let [file-menu (first (.getMenus %))
+                      export-menus (.getItems (nth (.getItems file-menu) 3))
+                      save-png (first export-menus)]
+                  (.setUserData save-png %))
+   :desc {:fx/type :menu-bar
+          :menus [{:fx/type :menu
+                   :text "File"
+                   :items [{:fx/type :menu-item
+                            :text "New"}
+                           {:fx/type :menu-item
+                            :text "Open..."}
+                           {:fx/type :menu-item
+                            :text "Save"}
+                           {:fx/type :menu
+                            :text "Export As"
+                            :items [{:fx/type :menu-item
+                                     :on-action {::events/type ::events/save-tilemap
+                                                 :filetype "png"}
+                                     :text "PNG"}]}]}
+                  {:fx/type :menu
+                   :text "Help"
+                   :items [{:fx/type :menu-item
+                            :text "About"}]}]}})
 
 (defn status-bar [{:keys [map-name]}]
   {:fx/type :h-box
@@ -158,8 +167,7 @@
                                  (.bind (.widthProperty canvas) (.widthProperty pane))
                                  (.bind (.heightProperty canvas) (.heightProperty pane)))
                   :desc {:fx/type :border-pane
-                         :top {:fx/type :menu-bar
-                               :menus menus}
+                         :top {:fx/type menu-bar}
                          :left {:fx/type :tool-bar
                                 :items []}
                          :right {:fx/type tileset-pane

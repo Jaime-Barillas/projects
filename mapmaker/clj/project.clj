@@ -4,7 +4,8 @@
   :license {:name "ISC"
             :url "https://opensource.org/licenses/ISC"}
   :dependencies [[org.clojure/clojure "1.11.1"]
-                 [cljfx "1.7.21"]]
+                 [cljfx "1.7.21"]
+                 [org.openjfx/javafx-swing "17.0.2"]]
   :main ^:skip-aot mapmaker.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all
