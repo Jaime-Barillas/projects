@@ -5,7 +5,9 @@
             :url "https://opensource.org/licenses/ISC"}
   :dependencies [[org.clojure/clojure "1.11.1"]
                  [http-kit/http-kit "2.6.0"]
-                 [metosin/reitit-ring "0.5.18"]]
+                 [metosin/reitit-ring "0.5.18"]
+                 [org.xerial/sqlite-jdbc "3.39.2.1"]
+                 [com.github.seancorfield/next.jdbc "1.2.796"]]
   :main ^:skip-aot robobots.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all
