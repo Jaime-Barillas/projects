@@ -1,8 +1,8 @@
 (defproject robobots "0.1.0-SNAPSHOT"
   :description "A website for building Robo-Robots!"
   :url "http://example.com/FIXME"
-  :license {:name "ISC"
-            :url "https://opensource.org/licenses/ISC"}
+  :license {:name "MIT"
+            :url "https://opensource.org/licenses/mit"}
   :dependencies [[org.clojure/clojure "1.11.1"]
                  [http-kit/http-kit "2.6.0"]
                  [metosin/reitit-ring "0.5.18"]
