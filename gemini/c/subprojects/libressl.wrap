@@ -1,0 +1,12 @@
+[wrap-file]
+directory = libressl-3.9.1
+source_url = https://github.com/libressl/portable/releases/download/v3.9.1/libressl-3.9.1.tar.gz
+source_filename = libressl-3.9.1.tar.gz
+source_hash = 6da0b954695f7ee62b03f64200a8a4f02af93717b60cce04ab6c8df262c07a51
+method = cmake
+
+[provide]
+crypto = crypto_dep
+ssl = ssl_dep
+tls = tls_dep
+openssl = openssl_dep
