@@ -1,0 +1,20 @@
+[ req ]
+default_md = sha256
+prompt = no
+string_mask = utf8only
+req_extensions = req_ext
+distinguished_name = req_distinguished_name
+[ req_distinguished_name ]
+commonName = lost-in-space.local
+countryName = CA
+stateOrProvinceName = Ontario
+organizationName = lost-in-space
+[ req_ext ]
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid:always,issuer
+keyUsage=critical,digitalSignature,keyEncipherment
+extendedKeyUsage=serverAuth,clientAuth
+basicConstraints=critical,CA:false
+subjectAltName = @alt_names
+[ alt_names ]
+DNS.0 = *.lost-in-space.local
