@@ -15,4 +15,5 @@ extendedKeyUsage=serverAuth,clientAuth
 basicConstraints=critical,CA:false
 subjectAltName = @alt_names
 [ alt_names ]
-DNS.0 = *.lost-in-space.local
+DNS.0 = 127.0.0.1
+DNS.1 = localhost

@@ -9,6 +9,8 @@ project('gemini', 'c',
   ]
 )
 
+slog = dependency('slog')
+
 libressl = subproject('libressl',
   default_options: [
     'c_std=gnu99', # TODO: only if meson.get_compiler('c').get_id() == 'gcc'
@@ -20,7 +22,7 @@ crypto = dependency('crypto')
 ssl = dependency('ssl')
 tls = dependency('tls')
 threads = dependency('threads')
-deps = [threads, tls, ssl, crypto]
+deps = [threads, slog, tls, ssl, crypto]
 
 executable('server',
   'server/main.c',

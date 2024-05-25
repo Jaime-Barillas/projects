@@ -11,20 +11,24 @@ cd cert/
 
 ## Server
 ## Generate the server RSA private key.
-openssl genpkey -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -out server.key # -outpubkey server.pub
+if [ ! -f "server.key" ]; then
+  openssl genpkey -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -out server.key
+fi
 
 ## Generate the server certificate signing request.
-openssl req -new -nodes -key server.key -config server-csrconfig.txt -nameopt utf8 -utf8 -out server-cert.csr
+openssl req -new -nodes -key server.key -config server-csrconfig.txt -nameopt utf8 -utf8 -out server.csr
 
 ## Self sign the server CSR, generating the cert.
-openssl req -x509 -nodes -in server-cert.csr -days 365 -key server.key -config server-certconfig.txt -extensions req_ext -nameopt utf8 -utf8 -out server-cert.crt
+openssl req -x509 -nodes -in server.csr -days 365 -key server.key -config server-certconfig.txt -extensions req_ext -nameopt utf8 -utf8 -out server.crt
 
 ## Client
 ## Generate the client RSA private key
-openssl genpkey -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -out client.key
+if [ ! -f "client.key" ]; then
+  openssl genpkey -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -out client.key
+fi
 
 ## Generate the client certificate signing request.
-openssl req -new -nodes -key client.key -config client-csrconfig.txt -nameopt utf8 -utf8 -out client-cert.csr
+openssl req -new -nodes -key client.key -config client-csrconfig.txt -nameopt utf8 -utf8 -out client.csr
 
 ## Self sign the client CSR, generating the cert.
-openssl req -x509 -nodes -in client-cert.csr -days 365 -key client.key -config client-certconfig.txt -extensions req_ext -nameopt utf8 -utf8 -out client-cert.crt
+openssl req -x509 -nodes -in client.csr -days 365 -key client.key -config client-certconfig.txt -extensions req_ext -nameopt utf8 -utf8 -out client.crt
