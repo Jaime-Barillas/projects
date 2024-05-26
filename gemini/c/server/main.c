@@ -1,26 +1,20 @@
+#include <netdb.h>
 #include <netinet/in.h>
 #include <slog.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/socket.h>
 #include <tls.h>
 #include <unistd.h>
 
 #include "../common/log.h"
 
-#define ERROR_TLS_INIT 1
-#define PORT 1965
+#define PORT "1965"
 
-int main(void) {
-  const int enabled_slog_levels = SLOG_FLAGS_ALL;
-  slog_init("server", enabled_slog_levels, 1);
-  slog_config_t slog_conf;
-  slog_config_get(&slog_conf);
-  slog_conf.nKeepOpen = 1;
-  slog_conf.nToFile = 1;
-  slog_conf.nFlush = 1;
-  slog_config_set(&slog_conf);
+struct tls *tls_ctx = NULL;
+int server_socket = -1;
 
+void setup_tls(void) {
   struct tls_config *tls_config = tls_config_new();
   if (tls_config == NULL) {
     LOG_AND_DIE(tls_config_error(tls_config));
@@ -33,12 +27,14 @@ int main(void) {
   if (tls_config_set_cert_file(tls_config, "../cert/server.crt") != 0) {
     LOG_AND_DIE(tls_config_error(tls_config));
   }
+  slog_debug("Using certificate ../cert/server.crt");
 
   if (tls_config_set_key_file(tls_config, "../cert/server.key") != 0) {
     LOG_AND_DIE(tls_config_error(tls_config));
   }
+  slog_debug("Using key ../cert/server.key");
 
-  struct tls *tls_ctx = tls_server();
+  tls_ctx = tls_server();
   if (tls_ctx == NULL) {
     LOG_AND_DIE("(tls_server): Failed to initialize the server context.");
   }
@@ -48,41 +44,69 @@ int main(void) {
     LOG_AND_DIE(tls_error(tls_ctx));
   }
 
+  slog_info("TLS configuration complete.");
+
   tls_config_free(tls_config);
+}
 
+void setup_socket(void) {
+  struct addrinfo hints;
+  struct addrinfo *server_info;
+  memset(&hints, 0, sizeof(hints));
+  hints.ai_family = AF_INET;
+  hints.ai_socktype = SOCK_STREAM;
 
-  struct sockaddr_in server_address;
-  int server_socket;
-
-  memset(&server_address, 0, sizeof(server_address));
-  server_address.sin_family = AF_INET;
-  server_address.sin_port = htons(PORT);
-  server_address.sin_addr.s_addr = htonl(INADDR_ANY);
-
-  server_socket = socket(AF_INET, SOCK_STREAM, 0);
-  if (server_socket == -1) {
-    slog_fatal("Server init: Failed to create server socket.");
-
-    slog_destroy();
-    return 1;
+  if (getaddrinfo("localhost", PORT, &hints, &server_info) != 0) {
+    tls_free(tls_ctx);
+    LOG_AND_DIE("(getaddrinfo): Failed to fetch address info.");
   }
 
-  if (bind(server_socket, (struct sockaddr*) &server_address, sizeof(server_address)) == -1) {
-    slog_fatal("Server init: Failed to bind server socket.");
+  for (;;) {
+    if (server_info == NULL) {
+      tls_free(tls_ctx);
+      LOG_AND_DIE("(socket/bind): Failed to bind socket.");
+    }
 
+    server_socket = socket(server_info->ai_family,
+                           server_info->ai_socktype,
+                           server_info->ai_protocol);
+    if (server_socket == -1) {
+      slog_info("(socket): Unable to create socket. Trying again...");
+      continue;
+    }
+
+    if (bind(server_socket, server_info->ai_addr, server_info->ai_addrlen) == -1) {
+      close(server_socket);
+      slog_info("(bind): Unable to bind socket. Trying again..");
+      continue;
+    }
+
+    break;
+  }
+
+  if (listen(server_socket, 8) == -1) {
     close(server_socket);
-    slog_destroy();
-    return 1;
+    tls_free(tls_ctx);
+    LOG_AND_DIE("(listen): Failed to listen for incomming connections.");
   }
 
-  if (listen(server_socket, 1) == -1) {
-    slog_fatal("Server init: Failed to listen on server socket.");
+  slog("Server listening for connections on 127.0.0.1:1965");
 
-    close(server_socket);
-    slog_destroy();
-    return 1;
-  }
-  slog("Server listening for connections on port %d", PORT);
+  freeaddrinfo(server_info);
+}
+
+int main(void) {
+  const int enabled_slog_levels = SLOG_FLAGS_ALL;
+  slog_init("server", enabled_slog_levels, 1);
+  slog_config_t slog_conf;
+  slog_config_get(&slog_conf);
+  slog_conf.nKeepOpen = 1;
+  slog_conf.nToFile = 1;
+  slog_conf.nFlush = 1;
+  slog_config_set(&slog_conf);
+
+  setup_tls();
+  setup_socket();
 
 
   struct sockaddr_in client_address;
