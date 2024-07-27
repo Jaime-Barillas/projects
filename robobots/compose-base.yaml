@@ -1,0 +1,31 @@
+networks:
+  network:
+
+volumes:
+  db-data:
+
+# Does not work out-of-the-box in podman v5.1.2 with neither docker-compose
+# v2.29.1 nor podman-compose 1.2.0.
+# Services need to add 'label:disable' to the security_opt field.
+# See: https://github.com/containers/podman-compose/issues/573
+secrets:
+  db-postgres-password:
+    file: ./.secrets/postgres-password
+
+services:
+  db:
+    image: localhost/postgres:16.3-alpine3.20
+    build: ./scripts/db
+    container_name: ${COMPOSE_PROJECT_NAME}_db
+    shm_size: 128mb
+    security_opt:
+      - label:disable
+    secrets:
+      - db-postgres-password
+    environment:
+      - POSTGRES_PASSWORD_FILE=/run/secrets/db-postgres-password
+    networks:
+      - network
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
