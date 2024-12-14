@@ -18,7 +18,7 @@ services:
     build: ./scripts/db
     container_name: ${COMPOSE_PROJECT_NAME}_db
     shm_size: 128mb
-    security_opt:
+    security_opt: # Workaround for podman-compose and docker-compose w/ podman.
       - label:disable
     secrets:
       - db-postgres-password
@@ -28,4 +28,16 @@ services:
       - network
     volumes:
       - db-data:/var/lib/postgresql/data
+
+  api:
+    image: 
+
+  admin:
+    image: 
+
+  frontend:
+    image: 
+
+  proxy:
+    image: 
 

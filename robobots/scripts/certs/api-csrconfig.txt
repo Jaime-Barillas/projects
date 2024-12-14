@@ -1,0 +1,19 @@
+[ req ]
+default_md = sha256
+prompt = no
+string_mask = utf8only
+req_extensions = req_ext
+distinguished_name = req_distinguished_name
+[ req_distinguished_name ]
+commonName = api.robobots.local
+countryName = CA
+organizationName = robobots
+[ req_ext ]
+keyUsage=critical,digitalSignature,keyEncipherment
+extendedKeyUsage=serverAuth,clientAuth
+basicConstraints=critical,CA:false
+subjectAltName = @alt_names
+[ alt_names ]
+IP.0 = 127.0.0.1
+DNS.0 = api.robobots.local
+
