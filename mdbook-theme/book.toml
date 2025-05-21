@@ -1,0 +1,10 @@
+[book]
+authors = ["Jaime Barillas"]
+language = "en"
+src = "src"
+title = "Demo"
+
+# ANCHOR: recommended-config-changes
+[output.html.print]
+enable = false
+# ANCHOR_END: recommended-config-changes
