@@ -107,6 +107,15 @@ eat_comment :: proc() {
 	if err != .EOF do io.seek(stream, -1, .Current)
 }
 
+eat_line :: proc() {
+	next, err := io.read_byte(stream)
+	for err == .None && !is_line_end(next) {
+		next, err = io.read_byte(stream)
+	}
+
+	if err != .EOF && next != ')' do io.seek(stream, -1, .Current)
+}
+
 parse_label :: proc() {
 	label, alloc_err := strings.builder_make_len_cap(0, 64)
 	defer strings.builder_destroy(&label)
@@ -290,13 +299,6 @@ main :: proc() {
 		os.exit(1)
 	}
 
-	assembled, alloc_err := strings.builder_make_len_cap(0, 4096)
-	defer strings.builder_destroy(&assembled)
-	if alloc_err != .None {
-		fmt.println("Failed to allocate builder")
-		os.exit(1)
-	}
-
 	var_table["SP"] = 0
 	var_table["LCL"] = 1
 	var_table["ARG"] = 2
@@ -327,11 +329,6 @@ main :: proc() {
 	// We'll assume hack assembly consists of only ASCII.
 	ascii, err := io.read_byte(stream)
 	for err == .None {
-		if err != .None {
-			fmt.println("Error:", err)
-			break
-		}
-
 		switch {
 		case is_whitespace(ascii):
 			eat_whitespace()
@@ -341,6 +338,43 @@ main :: proc() {
 			break
 		case is_label_declaration(ascii):
 			parse_label()
+		case is_variable_reference(ascii):
+		case:
+			/* C Instruction */
+			eat_line()
+			line += 1
+		}
+
+		ascii, err = io.read_byte(stream)
+	}
+
+	// Second pass
+	parsing = .Line
+
+	assembled, alloc_err := strings.builder_make_len_cap(0, 4096)
+	defer strings.builder_destroy(&assembled)
+	if alloc_err != .None {
+		fmt.println("Failed to allocate builder")
+		os.exit(1)
+	}
+
+	_, seek_err := io.seek(stream, 0, .Start)
+	if seek_err != .None {
+		fmt.println("Error initiating second pass")
+		os.exit(1)
+	}
+
+	ascii, err = io.read_byte(stream)
+	for err == .None {
+		switch {
+		case is_whitespace(ascii):
+			eat_whitespace()
+		case is_comment(ascii):
+			eat_comment()
+		case is_line_end(ascii):
+			break
+		case is_label_declaration(ascii):
+			eat_line()
 		case is_variable_reference(ascii):
 			next, err := io.read_byte(stream)
 			if err == .None {
@@ -353,10 +387,8 @@ main :: proc() {
 					parse_variable_reference(&assembled)
 				}
 			}
-			line += 1
 		case:
 			parse_c_instruction(ascii, &assembled)
-			line += 1
 		}
 
 		ascii, err = io.read_byte(stream)
