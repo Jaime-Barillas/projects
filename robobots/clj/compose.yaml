@@ -1,5 +1,0 @@
-name: robobots_clj
-
-include:
-  - ../compose-base.yaml
-

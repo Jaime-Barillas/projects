@@ -1,9 +1,10 @@
 {:top-namespace "robobots"
- :interface-ns "component"
+ :interface-ns "api"
  :default-profile-name "default"
  :compact-views #{}
  :vcs {:name "git"
        :auto-add true}
- :tag-patterns {:stable "stable-*"
-                :release "v[0-9]*"}
+ :tag-patterns {:stable "^stable-.*"
+                :release "^v[0-9].*"}
  :projects {"development" {:alias "dev"}}}
+
