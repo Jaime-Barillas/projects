@@ -1,4 +1,8 @@
-(ns robobots.server.core)
+(ns robobots.server.core
+  (:require
+    [org.httpkit.server :as server]
+    [robobots.api.api :as api]))
 
 (defn -main [& args]
-  (println "Hello, World!"))
+  (println "Listening on port 8080...")
+  (server/run-server api/app {:port 8080}))

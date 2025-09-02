@@ -1,5 +1,6 @@
 {:deps {org.clojure/clojure {:mvn/version "1.12.1"}
 
+        poly/api {:local/root "../../components/api"}
         poly/server {:local/root "../../bases/server"}}
 
  :aliases {:test {:extra-paths []

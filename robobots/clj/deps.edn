@@ -4,6 +4,7 @@
                                nrepl/nrepl {:mvn/version "1.2.0"}
                                cider/cider-nrepl {:mvn/version "0.57.0"}
 
+                               poly/api {:local/root "components/api"}
                                poly/server {:local/root "bases/server"}}
 
                   :main-opts  ["--main" "nrepl.cmdline"
