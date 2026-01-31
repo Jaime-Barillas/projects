@@ -1,0 +1,8 @@
+BasedOnStyle: LLVM
+Language: Cpp
+
+BinPackArguments: false
+BinPackParameters: false
+
+# AllowAllArgumentsOnNextLine: true
+# AllowAllParametersOfDeclarationOnNextLine: true
