@@ -51,7 +51,9 @@ target_compile_features(
 target_sources(
   ${PROJECT_NAME}
   PRIVATE
-    src/main.cpp
+    "src/main.cpp"
+    "src/sdl_app.cpp"
+    "src/app.cpp"
     ${imgui_SRCS}
 )
 target_include_directories(
